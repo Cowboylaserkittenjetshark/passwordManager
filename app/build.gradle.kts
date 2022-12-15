@@ -7,8 +7,12 @@ plugins {
 }
 
 dependencies {
-    implementation("org.apache.commons:commons-text")
-    implementation(project(":utilities"))
+  implementation(project(":database")) {
+      because("Password storage backend")
+    }
+  implementation(project(":utils")) {
+      because("Generate and check passwords")
+    }
 }
 
 application {

@@ -5,3 +5,7 @@
 plugins {
     id("passwordmanager.java-library-conventions")
 }
+
+dependencies {
+  
+}
