@@ -10,7 +10,7 @@ dependencies {
   implementation(project(":database")) {
       because("Password storage backend")
     }
-  implementation(project(":utils")) {
+  implementation(project(":util")) {
       because("Generate and check passwords")
     }
 }

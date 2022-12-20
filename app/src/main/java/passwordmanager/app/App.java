@@ -1,7 +1,7 @@
 package passwordmanager.app;
 
 import passwordmanager.database.PasswordDatabase;
-import passwordmanager.utils.*;
+import passwordmanager.util.*;
 
 public class App {
     public static void main(String[] args) {
