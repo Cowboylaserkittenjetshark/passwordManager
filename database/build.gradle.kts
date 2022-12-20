@@ -7,5 +7,13 @@ plugins {
 }
 
 dependencies {
-  
+  implementation("com.password4j:password4j:1.6.3") {
+      because("OS independent Argon2 KDF implementation")
+    }
+    implementation("com.password4j:password4j-jca:1.0.4") {
+      because("password4j extension for the Java Cryptography Architecture")
+    }
+    implementation("com.google.code.gson:gson:2.10") {
+      because("Convert Objects to JSON")
+    }
 }
