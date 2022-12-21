@@ -27,8 +27,8 @@ public class EncryptedDatabase {
 		this.type = type;
 	}
 
-	protected void rotate(byte[] accountList, IvParameterSpec initVector) {
+	protected void rotate(byte[] accountList) {
 		this.accountList = accountList;
-		this.initVector = initVector;
+		this.initVector = CryptUtil.getInitVector();
 	}
  }
