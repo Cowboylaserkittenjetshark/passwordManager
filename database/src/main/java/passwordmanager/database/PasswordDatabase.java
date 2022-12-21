@@ -29,9 +29,11 @@ public class PasswordDatabase {
     EncryptedDatabase database = jsonProcessor.fromJson(fileRead, EncryptedDatabase.class);
     fileRead.close();
     String asJson = CryptUtil.decrypt(password, database.initVector, database.salt, database.memory, database.iterations, database.parallelization, database.length, database.type, database.accountList);
-    TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>(){}.getType() 
+    TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>() {};
     return new Gson().fromJson(asJson, accountListType.getType());
   }
 
-  private void exportDatabase()
+  private void exportDatabase() {
+
+  }
 }
