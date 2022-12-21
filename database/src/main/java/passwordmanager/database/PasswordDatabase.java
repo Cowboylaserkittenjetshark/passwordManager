@@ -1,9 +1,9 @@
 package passwordmanager.database;
 
 // WIP: Remove glob imports
-import com.password4j.*;
-import com.password4j.jca.*;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 // IO
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,18 +19,19 @@ public class PasswordDatabase {
 
   public PasswordDatabase(File databaseFile) {
     this.databaseFile = databaseFile;
-    this.accountList = importDatabase(this.databaseFile);
+    this.accountList = importDatabase();
   }
 
-  private ArrayList<Account> importDatabase(File databaseFile) {
+  private ArrayList<Account> importDatabase() {
+    char[] password; // Get password from somewhere
     Gson jsonProcessor = new Gson();
-    FileInputStream fileIn = new FileInputStream(databaseFile);
-    BufferedReader fileRead = new BufferedReader(new FileReader(databaseFile));
+    BufferedReader fileRead = new BufferedReader(new FileReader(this.databaseFile));
     EncryptedDatabase database = jsonProcessor.fromJson(fileRead, EncryptedDatabase.class);
-    return decryptDatabase(database.accountList, database.salt, database.memory, database.iterations, database.parallelization, database.length);
+    fileRead.close();
+    String asJson = CryptUtil.decrypt(password, database.initVector, database.salt, database.memory, database.iterations, database.parallelization, database.length, database.type, database.accountList);
+    TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>(){}.getType() 
+    return new Gson().fromJson(asJson, accountListType.getType());
   }
 
-  private ArrayList<Account> decryptDatabase(byte[] accountList, byte[] salt, int memory, int iterations, int parallelization, int length) {
-    
-  }
+  private void exportDatabase()
 }
