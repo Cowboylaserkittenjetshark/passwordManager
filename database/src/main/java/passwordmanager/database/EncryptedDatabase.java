@@ -13,6 +13,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import com.password4j.jca.providers.Password4jProvider;
 import com.password4j.jca.spec.Argon2KeySpec;
@@ -44,7 +45,7 @@ public class EncryptedDatabase {
 	protected String decrypt(char[] password) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
         SecretKey key = getSecretKey(password, this.salt, this.memory, this.iterations, this.parallelization, this.length, this.type);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key, initVector);
+        cipher.init(Cipher.DECRYPT_MODE, key, initVector);
         return new String(cipher.doFinal(accountList));
     }
   
@@ -52,7 +53,7 @@ public class EncryptedDatabase {
       SecretKey key = getSecretKey(password, this.salt, this.memory, this.iterations, this.parallelization, this.length, this.type);
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	  this.initVector = new IvParameterSpec(getRandomBytes(16));
-      cipher.init(Cipher.DECRYPT_MODE, key, this.initVector);
+      cipher.init(Cipher.ENCRYPT_MODE, key, this.initVector);
       this.accountList = cipher.doFinal(accountListJSON.getBytes());
     }
 
@@ -61,7 +62,7 @@ public class EncryptedDatabase {
         Password4jProvider.enable();
         SecretKeyFactory argonKeyFactory = SecretKeyFactory.getInstance("argon2");
         Argon2KeySpec argonSpec = new Argon2KeySpec(password, salt, memory, iterations, parallelization, length, Argon2.ID);
-        return argonKeyFactory.generateSecret(argonSpec);
+        return new SecretKeySpec(argonKeyFactory.generateSecret(argonSpec).getEncoded(), "AES");
     }
 
 	private static byte[] getRandomBytes(int length) {
