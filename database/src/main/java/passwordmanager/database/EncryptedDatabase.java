@@ -22,7 +22,7 @@ import com.password4j.types.Argon2;
 public class EncryptedDatabase {
 	// AES info
 	protected byte[] accountList;
-	protected IvParameterSpec initVector;
+	protected byte[] initVector;
 	// Argon2 parameters
 	protected final byte[] salt;
 	protected final int memory;
@@ -33,7 +33,7 @@ public class EncryptedDatabase {
 
 	protected EncryptedDatabase(byte[] accountList, int memory, int iterations, int parallelization, int length, Argon2 type) {
 		this.accountList = accountList;
-		this.initVector = new IvParameterSpec(getRandomBytes(16));
+		this.initVector = getRandomBytes(16);
 		this.salt = getRandomBytes(16);
 		this.memory = memory;
 		this.iterations = iterations;
@@ -45,15 +45,15 @@ public class EncryptedDatabase {
 	protected String decrypt(char[] password) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
         SecretKey key = getSecretKey(password, this.salt, this.memory, this.iterations, this.parallelization, this.length, this.type);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, key, initVector);
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(this.initVector));
         return new String(cipher.doFinal(accountList));
     }
   
     protected void encrypt(char[] password, String accountListJSON) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
       SecretKey key = getSecretKey(password, this.salt, this.memory, this.iterations, this.parallelization, this.length, this.type);
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	  this.initVector = new IvParameterSpec(getRandomBytes(16));
-      cipher.init(Cipher.ENCRYPT_MODE, key, this.initVector);
+	  this.initVector = getRandomBytes(16);
+      cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(this.initVector));
       this.accountList = cipher.doFinal(accountListJSON.getBytes());
     }
 
@@ -70,4 +70,8 @@ public class EncryptedDatabase {
         new SecureRandom().nextBytes(randomBytes);
         return randomBytes;
     }
+
+	public String toString() {
+		return ("" + memory + " " + iterations + " " + parallelization + " " + length);
+	}
  }

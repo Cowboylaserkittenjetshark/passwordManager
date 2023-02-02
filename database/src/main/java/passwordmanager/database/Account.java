@@ -1,16 +1,15 @@
 package passwordmanager.database;
 
-import java.time.Instant;
 import java.util.Comparator;
 
 public class Account {
     protected String accountName;
     protected String username;
     protected String password;
-    protected Instant time;
+    protected long time;
 
     protected Account(String accountName, String username, String password) {
-        this.time = Instant.now();
+        this.time = System.currentTimeMillis();
         this.accountName = accountName;
         this.username = username;
         this.password = password;
@@ -33,7 +32,7 @@ public class Account {
     public static class TimeComparator implements Comparator<Account> {
         @Override
         public int compare(Account account0, Account account1) {
-            return account0.time.compareTo(account1.time);
+            return Long.compare(account0.time, account1.time);
         }
 
     }

@@ -39,12 +39,12 @@ public class PasswordDatabase {
   }
 
   // TODO Database init logic
-  // TODO Initialize database every time. Initializing does nothing if already initialized and the logic will be similar to already implemented
+  // TODO Initialize database every time. Initializing does nothing if already
+  // initialized and the logic will be similar to already implemented
   public PasswordDatabase(File databaseFile, char[] databasePassword) throws InvalidDatabaseException {
     this.databaseFile = databaseFile;
     this.databasePassword = databasePassword;
     this.accountList = importDatabase();
-    
   }
 
   private ArrayList<Account> importDatabase() throws InvalidDatabaseException {
@@ -63,7 +63,8 @@ public class PasswordDatabase {
      */
     TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>() {
     };
-    return new Gson().fromJson(accountListJSON, accountListType.getType());
+    ArrayList<Account> imported = new Gson().fromJson(accountListJSON, accountListType.getType());
+    return imported;
   }
 
   private void exportDatabase() throws InvalidDatabaseException {
@@ -114,14 +115,36 @@ public class PasswordDatabase {
     }
   }
 
-  public void addAccount(Account account) throws InvalidDatabaseException {
-    this.accountList.add(account);
+  public boolean addAccount(Account account) throws InvalidDatabaseException {
+    boolean exitCode = this.accountList.add(account);
     exportDatabase();
+    return exitCode;
   }
 
-  public void removeAccount(int accountIndex) throws InvalidDatabaseException {
-    this.accountList.remove(accountIndex);
+  public Account removeAccount(int accountIndex) throws InvalidDatabaseException {
+    Account removed = this.accountList.remove(accountIndex);
     exportDatabase();
+    return removed;
+  }
+
+  public ArrayList<Account> getAccounts() {
+    return this.accountList;
+  }
+  
+  public Account getAccount(int index) {
+    return this.accountList.get(index);
+  }
+
+  public String getAccountName(int index) {
+    return this.accountList.get(index).accountName;
+  }
+
+  public String getPassword(int index) {
+    return this.accountList.get(index).password;
+  }
+
+  public String getUsername(int index) {
+    return this.accountList.get(index).username;
   }
 
   // TODO Implement sort (By ABC, time)
