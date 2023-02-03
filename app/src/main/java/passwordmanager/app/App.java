@@ -10,41 +10,26 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
 
+import passwordmanager.database.PasswordDatabase;
+
 public class App {
     public static void main(String[] args) {
-        // Check if config file exists and 
         final String CONFIG_DIR = getConfigLocation();
-        if (Files.notExists(Paths.get(CONFIG_DIR, "jpass.conf"))) {
-            try {
-                Files.createDirectories(Paths.get(CONFIG_DIR));
-                Files.createFile(Paths.get(CONFIG_DIR, "jpass.conf"));
-                storeProperties();
-            } catch (IOException e) {
-                throw new RuntimeException("Failed trying to initialize config file", e);
-            }
-        }
-        try {
-            loadProperties(Paths.get(CONFIG_DIR, "jpass.conf"));
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load configuration file", e);
-        }
         Scanner scan = new Scanner(System.in);
         Console console = System.console();
         char[] password = console.readPassword("Enter password to unlock: ");
-        PasswordDatabase database = new PasswordDat
-    }
-
-    private static Properties loadProperties(Path confPath) throws IOException {
-        Properties props = new Properties();
-        Path configFilePath = Paths.get(getConfigLocation());
-        BufferedReader bufferedConfigReader = Files.newBufferedReader(configFilePath);
-        props.load(bufferedConfigReader);
-        bufferedConfigReader.close();
-        return props;
-    }
-
-    private static void storeProperties() {
-        
+        if (Files.notExists(Paths.get(CONFIG_DIR, "jpass.db"))) {
+            try {
+                Files.createDirectories(Paths.get(CONFIG_DIR));
+                Files.createFile(Paths.get(CONFIG_DIR, "jpass.db"));
+                PasswordDatabase database = new PasswordDatabase(Paths.get(CONFIG_DIR, "jpass.db").toFile(), password, 0, 0, 0, 0, null)
+            } catch (IOException e) {
+                throw new RuntimeException("Failed trying to create new database file", e);
+            }
+        }
+        else {
+            // Impoort existing db
+        }
     }
 
     private static String getConfigLocation() {
