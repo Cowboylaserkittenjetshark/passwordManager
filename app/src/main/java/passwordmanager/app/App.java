@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
+        // Check if config file exists and 
         final String CONFIG_DIR = getConfigLocation();
         if (Files.notExists(Paths.get(CONFIG_DIR, "jpass.conf"))) {
             try {
@@ -22,14 +23,15 @@ public class App {
                 throw new RuntimeException("Failed trying to initialize config file", e);
             }
         }
-        loadProperties(Paths.get(CONFIG_DIR, "jpass.conf"));
+        try {
+            loadProperties(Paths.get(CONFIG_DIR, "jpass.conf"));
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load configuration file", e);
+        }
         Scanner scan = new Scanner(System.in);
         Console console = System.console();
         char[] password = console.readPassword("Enter password to unlock: ");
-        // TODO Wipe array?
-        console.printf(new String(password)); // TODO Remove password echo
-        console.printf("Config directory: %s", getConfigLocation());
-        // PasswordDatabase database = new PasswordDat
+        PasswordDatabase database = new PasswordDat
     }
 
     private static Properties loadProperties(Path confPath) throws IOException {
