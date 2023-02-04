@@ -10,26 +10,41 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
 
+import com.password4j.types.Argon2;
+
+import passwordmanager.database.InvalidDatabaseException;
 import passwordmanager.database.PasswordDatabase;
 
 public class App {
     public static void main(String[] args) {
-        final String CONFIG_DIR = getConfigLocation();
-        Scanner scan = new Scanner(System.in);
+        final String configDirPath = getConfigLocation();
+        final Path dbPath = Paths.get(configDirPath, "jpass.db");
+        final Scanner scan = new Scanner(System.in);
+        final PasswordDatabase database;
         Console console = System.console();
-        char[] password = console.readPassword("Enter password to unlock: ");
-        if (Files.notExists(Paths.get(CONFIG_DIR, "jpass.db"))) {
+        char[] password;
+        if (Files.notExists(dbPath)) {
+            System.out.println("Didn't find a database file at " + dbPath.toString() + ". ") // TODO New DB prompt
+            password = console.readPassword("Enter a new password: ");
             try {
-                Files.createDirectories(Paths.get(CONFIG_DIR));
-                Files.createFile(Paths.get(CONFIG_DIR, "jpass.db"));
-                PasswordDatabase database = new PasswordDatabase(Paths.get(CONFIG_DIR, "jpass.db").toFile(), password, 0, 0, 0, 0, null)
-            } catch (IOException e) {
+                Files.createDirectories(Paths.get(configDirPath));
+                Files.createFile(dbPath);
+                database = new PasswordDatabase(dbPath.toFile(), password, 15, 1, 2, 32, Argon2.ID);
+            } catch (IOException|InvalidDatabaseException e) {
+                scan.close();
                 throw new RuntimeException("Failed trying to create new database file", e);
             }
         }
         else {
-            // Impoort existing db
+            try {
+                database = new PasswordDatabase(dbPath.toFile(), password);
+            } catch (InvalidDatabaseException e) {
+                scan.close();
+                throw new RuntimeException("Failed trying to import existing database file", e);
+            }
         }
+
+        scan.close();
     }
 
     private static String getConfigLocation() {
