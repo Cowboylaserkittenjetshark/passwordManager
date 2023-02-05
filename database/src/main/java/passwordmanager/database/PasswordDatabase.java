@@ -30,8 +30,8 @@ public class PasswordDatabase {
   private final char[] databasePassword;
   private final ArrayList<Account> accountList;
 
-  public PasswordDatabase(File databaseFile, char[] databasePassword, int memory, int iterations, int parallelization,
-      int length, Argon2 type) throws InvalidDatabaseException {
+  public PasswordDatabase(File databaseFile, char[] databasePassword, int memory, int iterations,
+      int parallelization, int length, Argon2 type) throws InvalidDatabaseException {
     this.databaseFile = databaseFile;
     this.databasePassword = databasePassword;
     this.accountList = new ArrayList<Account>();
@@ -41,28 +41,28 @@ public class PasswordDatabase {
   // TODO Database init logic
   // TODO Initialize database every time. Initializing does nothing if already
   // initialized and the logic will be similar to already implemented
-  public PasswordDatabase(File databaseFile, char[] databasePassword) throws InvalidDatabaseException {
+  public PasswordDatabase(File databaseFile, char[] databasePassword)
+      throws InvalidDatabaseException, BadPaddingException {
     this.databaseFile = databaseFile;
     this.databasePassword = databasePassword;
     this.accountList = importDatabase();
   }
 
-  private ArrayList<Account> importDatabase() throws InvalidDatabaseException {
+  private ArrayList<Account> importDatabase() throws InvalidDatabaseException, BadPaddingException {
     EncryptedDatabase database = readDatabseFile();
     String accountListJSON = null;
     try {
       accountListJSON = database.decrypt(this.databasePassword);
     } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-        | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException
+        | InvalidAlgorithmParameterException | IllegalBlockSizeException
         | InvalidKeySpecException e) {
       throw new InvalidDatabaseException("Database contains invalid encryption parameters", e);
     }
     /*
-     * TODO Add citation to the GSON Javadoc for the TypeToken line
-     * TODO Check if the braces are actually needed
+     * TODO Add citation to the GSON Javadoc for the TypeToken line TODO Check if the braces are
+     * actually needed
      */
-    TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>() {
-    };
+    TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>() {};
     ArrayList<Account> imported = new Gson().fromJson(accountListJSON, accountListType.getType());
     return imported;
   }
@@ -81,7 +81,8 @@ public class PasswordDatabase {
       fileWrite.write(new Gson().toJson(database));
       fileWrite.close();
     } catch (IOException e) {
-      throw new InvalidDatabaseException("Cannot access database at " + this.databaseFile.getName(), e);
+      throw new InvalidDatabaseException("Cannot access database at " + this.databaseFile.getName(),
+          e);
     }
   }
 
@@ -92,16 +93,18 @@ public class PasswordDatabase {
         throw new InvalidDatabaseException("Database not initialized");
       return database;
     } catch (JsonIOException | IOException e) {
-      throw new InvalidDatabaseException("Cannot access database at " + this.databaseFile.getName(), e);
+      throw new InvalidDatabaseException("Cannot access database at " + this.databaseFile.getName(),
+          e);
     }
   }
 
-  private void initializeDatatbase(int memory, int iterations, int parallelization, int length, Argon2 type)
-      throws InvalidDatabaseException {
+  private void initializeDatatbase(int memory, int iterations, int parallelization, int length,
+      Argon2 type) throws InvalidDatabaseException {
     String accountListJSON = new Gson().toJson(this.accountList);
-    EncryptedDatabase database = new EncryptedDatabase(null, memory, iterations, parallelization, length, type);
+    EncryptedDatabase database =
+        new EncryptedDatabase(null, memory, iterations, parallelization, length, type);
     try {
-      database.encrypt(databasePassword, accountListJSON);
+      database.encrypt(this.databasePassword, accountListJSON);
     } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
         | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException
         | InvalidKeySpecException e) {
@@ -111,7 +114,8 @@ public class PasswordDatabase {
       fileWrite.write(new Gson().toJson(database));
       fileWrite.close();
     } catch (IOException e) {
-      throw new InvalidDatabaseException("Cannot create database at " + this.databaseFile.getName(), e);
+      throw new InvalidDatabaseException("Cannot create database at " + this.databaseFile.getName(),
+          e);
     }
   }
 
@@ -130,7 +134,7 @@ public class PasswordDatabase {
   public ArrayList<Account> getAccounts() {
     return this.accountList;
   }
-  
+
   public Account getAccount(int index) {
     return this.accountList.get(index);
   }
