@@ -1,8 +1,6 @@
 package passwordmanager.app;
 
 import java.io.File;
-import java.util.ArrayList;
-import passwordmanager.database.Account;
 
 public class Util {
 
