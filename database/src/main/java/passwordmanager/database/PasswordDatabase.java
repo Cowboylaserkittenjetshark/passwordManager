@@ -38,9 +38,6 @@ public class PasswordDatabase {
     initializeDatatbase(memory, iterations, parallelization, length, type);
   }
 
-  // TODO Database init logic
-  // TODO Initialize database every time. Initializing does nothing if already
-  // initialized and the logic will be similar to already implemented
   public PasswordDatabase(File databaseFile, char[] databasePassword)
       throws InvalidDatabaseException, BadPaddingException {
     this.databaseFile = databaseFile;
@@ -59,8 +56,7 @@ public class PasswordDatabase {
       throw new InvalidDatabaseException("Database contains invalid encryption parameters", e);
     }
     /*
-     * TODO Add citation to the GSON Javadoc for the TypeToken line TODO Check if the braces are
-     * actually needed
+     * TODO Add citation to the GSON Javadoc for the TypeToken line
      */
     TypeToken<ArrayList<Account>> accountListType = new TypeToken<ArrayList<Account>>() {};
     ArrayList<Account> imported = new Gson().fromJson(accountListJSON, accountListType.getType());
@@ -131,6 +127,12 @@ public class PasswordDatabase {
     return removed;
   }
 
+  public boolean removeAccount(Account account) throws InvalidDatabaseException {
+    boolean removed = this.accountList.remove(account);
+    exportDatabase();
+    return removed;
+  }
+
   public ArrayList<Account> getAccounts() {
     return this.accountList;
   }
@@ -151,10 +153,21 @@ public class PasswordDatabase {
     return this.accountList.get(index).username;
   }
 
+  public ArrayList<Account> search(String searchString) {
+    ArrayList<Account> searchResults = new ArrayList<Account>();
+    for (Account currAccount : accountList) {
+      if (currAccount.accountName.contains(searchString)
+          || currAccount.username.contains(searchString)) {
+        searchResults.add(currAccount);
+      }
+    }
+    return searchResults;
+  }
+
   // TODO Implement sort (By ABC, time)
   public void sortAccounts(Comparator<Account> comparator) {
     this.accountList.sort(comparator);
   }
-  // TODO Implement search (By accountName, username, maybe time)
+
   // TODO Implement dump (Return as Account[] ?)
 }

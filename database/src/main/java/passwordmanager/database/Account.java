@@ -3,12 +3,12 @@ package passwordmanager.database;
 import java.util.Comparator;
 
 public class Account {
-    protected String accountName;
-    protected String username;
-    protected String password;
-    protected long time;
+    public String accountName;
+    public String username;
+    public String password;
+    public long time;
 
-    protected Account(String accountName, String username, String password) {
+    public Account(String accountName, String username, String password) {
         this.time = System.currentTimeMillis();
         this.accountName = accountName;
         this.username = username;

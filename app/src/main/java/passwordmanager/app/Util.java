@@ -1,6 +1,8 @@
 package passwordmanager.app;
 
 import java.io.File;
+import java.util.ArrayList;
+import passwordmanager.database.Account;
 
 public class Util {
 
@@ -38,5 +40,18 @@ public class Util {
 		return configPathBuilder.toString();
 	}
 
-	//TODO add color method
+// TODO Finish color method?
+/* 	protected static String color(String str, String color) {
+		StringBuilder coloredStringBuilder = new StringBuilder();
+		switch(color) {
+			case "red":
+				coloredStringBuilder.append("\u001B[31m");
+				break;
+			case("green"):
+				coloredStringBuilder
+		}
+		coloredStringBuilder.append(str);
+		coloredStringBuilder.append(coloredStringBuilder);
+		return coloredStringBuilder.toString();
+	} */
 }
