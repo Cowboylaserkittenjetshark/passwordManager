@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
-
+import javax.crypto.BadPaddingException;
 import org.junit.jupiter.api.Test;
 
 import com.password4j.types.Argon2;
 
 public class DatabaseTests {
-    @Test void testInitialization() throws IOException {
+    @Test void testInitialization() throws IOException, BadPaddingException {
         String password = "password";
         File databaseFile = new File("test.db");
         databaseFile.createNewFile();
