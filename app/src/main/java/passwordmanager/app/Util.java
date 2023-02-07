@@ -3,6 +3,10 @@ package passwordmanager.app;
 import java.io.File;
 
 public class Util {
+	protected static final byte PROMPT = 1;
+	protected static final byte PROBLEM = 2;
+	protected static final byte LIST = 3;
+	protected static final byte DETAILS = 4;
 
 	protected static String getConfigLocation() {
 		String osProp = System.getProperty("os.name");
@@ -38,18 +42,28 @@ public class Util {
 		return configPathBuilder.toString();
 	}
 
-// TODO Finish color method?
-/* 	protected static String color(String str, String color) {
+	// TODO Finish color method?
+	protected static String color(String str, byte color) {
 		StringBuilder coloredStringBuilder = new StringBuilder();
-		switch(color) {
-			case "red":
-				coloredStringBuilder.append("\u001B[31m");
+		switch (color) {
+			case PROMPT:
+				coloredStringBuilder.append("\033[1;36m");
 				break;
-			case("green"):
-				coloredStringBuilder
+			case PROBLEM:
+				coloredStringBuilder.append("\033[31m");
+				break;
+			case LIST:
+				coloredStringBuilder.append("\033[35m");
+				break;
+			case DETAILS:
+				coloredStringBuilder.append("\033[1;32m");
 		}
 		coloredStringBuilder.append(str);
-		coloredStringBuilder.append(coloredStringBuilder);
+		coloredStringBuilder.append("\033[0m");
 		return coloredStringBuilder.toString();
-	} */
+	}
+
+	protected static String color(int intToString, byte color) {
+		return color(String.valueOf(intToString), color);
+	}
 }

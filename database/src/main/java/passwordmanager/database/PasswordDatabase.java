@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -43,6 +44,14 @@ public class PasswordDatabase {
     this.databaseFile = databaseFile;
     this.databasePassword = databasePassword;
     this.accountList = importDatabase();
+  }
+
+  public static PasswordDatabase getInstanceExisting(Path dbPath, char[] password) throws BadPaddingException, InvalidDatabaseException {
+    return new PasswordDatabase(dbPath.toFile(), password);
+  }
+
+  public static PasswordDatabase getInstanceNew(Path dbPath, char[] password) throws InvalidDatabaseException {
+    return new PasswordDatabase(dbPath.toFile(), password,15, 1, 2, 32, Argon2.ID);
   }
 
   private ArrayList<Account> importDatabase() throws InvalidDatabaseException, BadPaddingException {
