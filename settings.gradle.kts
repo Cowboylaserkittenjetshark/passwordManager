@@ -8,4 +8,4 @@
  */
 
 rootProject.name = "passwordManager"
-include("app", "database", "util")
+include("app", "database")
