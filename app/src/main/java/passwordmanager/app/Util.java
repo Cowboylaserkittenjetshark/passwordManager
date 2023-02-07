@@ -42,8 +42,10 @@ public class Util {
 		return configPathBuilder.toString();
 	}
 
-	// TODO Finish color method?
 	protected static String color(String str, byte color) {
+    if(System.getProperty("os.name").matches("Windows")) {
+      return str;
+    }
 		StringBuilder coloredStringBuilder = new StringBuilder();
 		switch (color) {
 			case PROMPT:
