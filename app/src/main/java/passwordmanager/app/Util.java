@@ -17,7 +17,7 @@ public class Util {
 			configPathBuilder.append("jpass");
 		} else if (osProp.matches("Linux|SunOS|FreeBSD(?:...)")) {
 			String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
-			if (!xdgConfigHome.equals(null)) {
+			if (!(xdgConfigHome == null)) {
 				configPathBuilder.append(xdgConfigHome);
 			} else {
 				configPathBuilder.append(System.getenv("HOME"));
