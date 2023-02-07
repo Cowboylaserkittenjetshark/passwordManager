@@ -11,11 +11,11 @@ public class Util {
 	protected static String getConfigLocation() {
 		String osProp = System.getProperty("os.name");
 		StringBuilder configPathBuilder = new StringBuilder();
-		if (osProp.matches("Windows]")) {
+		if (osProp.matches("Windows(?:...)")) {
 			configPathBuilder.append(System.getenv("APPDATA"));
 			configPathBuilder.append(File.separator);
 			configPathBuilder.append("jpass");
-		} else if (osProp.matches("Linux|SunOS|FreeBSD")) {
+		} else if (osProp.matches("Linux|SunOS|FreeBSD(?:...)")) {
 			String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
 			if (!xdgConfigHome.equals(null)) {
 				configPathBuilder.append(xdgConfigHome);
@@ -26,7 +26,7 @@ public class Util {
 			}
 			configPathBuilder.append(File.separator);
 			configPathBuilder.append("jpass");
-		} else if (osProp.matches("Mac")) {
+		} else if (osProp.matches("Mac(?:...)")) {
 			configPathBuilder.append(System.getProperty("user.home"));
 			configPathBuilder.append(File.separator);
 			configPathBuilder.append("Library");
@@ -43,7 +43,7 @@ public class Util {
 	}
 
 	protected static String color(String str, byte color) {
-    if(System.getProperty("os.name").matches("Windows")) {
+    if(System.getProperty("os.name").matches("Windows(?:...)")) {
       return str;
     }
 		StringBuilder coloredStringBuilder = new StringBuilder();
