@@ -1,6 +1,7 @@
 package passwordmanager.app;
 
 import java.io.File;
+import java.security.SecureRandom;
 
 public class Util {
 	protected static final byte PROMPT = 1;
@@ -67,5 +68,16 @@ public class Util {
 
 	protected static String color(int intToString, byte color) {
 		return color(String.valueOf(intToString), color);
+	}
+
+	protected static char[] randomPassword(int length) {
+		char[] pool = new char[]{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','@','#','$','%','^','&','*'};
+        SecureRandom rand = new SecureRandom();
+        char[] randPassword = new char[length];
+		for(int i = 0; i < randPassword.length; i++) {
+            int num = rand.nextInt(pool.length - 1);
+            randPassword[i] = pool[num];
+        }
+		return randPassword;
 	}
 }
