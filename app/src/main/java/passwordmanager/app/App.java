@@ -24,16 +24,20 @@ public class App {
 
         // Access database
         if (Files.notExists(dbPath)) {
-            System.out.println(Util.color(">>", Util.PROMPT) + " Didn't find a database file at " + dbPath.toString()
-                    + ". Creating a new one.");
+            System.out.println(Util.color(">>", Util.PROMPT) + " Didn't find a database file at "
+                    + dbPath.toString() + ". Creating a new one.");
+                    System.out.println(Util.color(">>", Util.PROMPT) + " Please set an encryption password to secure the password manager. This password will be required to unlock the password manager when it starts.");
             boolean passwordsMatch = false;
             do {
-                password = console.readPassword(Util.color(">>", Util.PROMPT) + " Enter new password: ");
-                char[] passwordCheck = console.readPassword(Util.color(">>", Util.PROMPT) + " Re-enter password: ");
+                password = console
+                        .readPassword(Util.color(">>", Util.PROMPT) + " Enter new password: ");
+                char[] passwordCheck = console
+                        .readPassword(Util.color(">>", Util.PROMPT) + " Re-enter password: ");
                 if (Arrays.equals(password, passwordCheck)) {
                     passwordsMatch = true;
                 } else {
-                    System.out.println(Util.color("Passwords do not match. Try again", Util.PROBLEM));
+                    System.out
+                            .println(Util.color("Passwords do not match. Try again", Util.PROBLEM));
                 }
             } while (!passwordsMatch);
             try {
@@ -45,7 +49,8 @@ public class App {
             }
         } else {
             try {
-                password = console.readPassword(Util.color(">>", Util.PROMPT) + " Enter password to unlock: ");
+                password = console.readPassword(
+                        Util.color(">>", Util.PROMPT) + " Enter password to unlock: ");
                 database = PasswordDatabase.getInstanceExisting(dbPath, password);
             } catch (InvalidDatabaseException e) {
                 throw new RuntimeException("Failed trying to import existing database file", e);
@@ -57,24 +62,36 @@ public class App {
         // Main menu
         final Scanner scan = new Scanner(System.in);
         String filter = "";
-
         System.out.println();
         boolean runLoop = true;
         while (runLoop) {
             int index = 1;
+
             for (Account currAccount : database.search(filter)) {
                 System.out.println(Util.color(index, Util.LIST) + " " + currAccount.accountName);
                 index++;
             }
-            System.out.print(Util.color(">>", Util.PROMPT) + " Enter an account number to view or [A]dd [R]emove [F]ilter [S]ort [E]xit: ");
+            if(index == 1) {
+                if(filter.equals("")) {
+                    System.out.println(Util.color("\tYou haven't added any accounts yet. When you do, they will be listed here", Util.DETAILS));
+                }
+                else {
+                    System.out.println(Util.color("\tNo accounts match the filter " + "\"" + filter + "\"", Util.DETAILS));
+                }
+            }
+            System.out.print(Util.color(">>", Util.PROMPT)
+                    + " Enter an account number to view or [A]dd [R]emove [F]ilter [S]ort [E]xit: ");
             if (scan.hasNextInt()) { // View when an int is entered
                 int input = scan.nextInt();
                 scan.nextLine();
                 Account accountAtIndex = database.search(filter).get(input - 1);
                 System.out.println();
-                System.out.printf("\t%s %s\n", Util.color("Account:", Util.DETAILS),accountAtIndex.accountName);
-                System.out.printf("\t%s %s\n", Util.color("Username:", Util.DETAILS), accountAtIndex.username);
-                System.out.printf("\t%s %s\n", Util.color("Password:", Util.DETAILS), accountAtIndex.password);
+                System.out.printf("\t%s %s\n", Util.color("Account:", Util.DETAILS),
+                        accountAtIndex.accountName);
+                System.out.printf("\t%s %s\n", Util.color("Username:", Util.DETAILS),
+                        accountAtIndex.username);
+                System.out.printf("\t%s %s\n", Util.color("Password:", Util.DETAILS),
+                        accountAtIndex.password);
                 System.out.println();
                 System.out.println(Util.color(">>", Util.PROMPT) + " Press Enter to continue");
                 scan.nextLine();
@@ -88,19 +105,51 @@ public class App {
                     System.out.println(Util.color(">>", Util.PROMPT) + " Adding a new account");
                     System.out.print(Util.color(">>", Util.PROMPT) + " Account name: ");
                     accountName = scan.nextLine();
-                    System.out.print(Util.color(">>", Util.PROMPT) + " Account username or email: ");
+                    System.out
+                            .print(Util.color(">>", Util.PROMPT) + " Account username or email: ");
                     username = scan.nextLine();
-                    boolean passwordsMatch = false;
-                    do {
-                        accountPassword = console.readPassword(Util.color(">>", Util.PROMPT) + " Enter account password: ");
-                        char[] passwordCheck = console.readPassword(Util.color(">>", Util.PROMPT) + " Re-enter account password: ");
-                        if (Arrays.equals(accountPassword, passwordCheck)) {
-                            passwordsMatch = true;
-                        } else {
-                            System.out.println(Util.color("Passwords do not match. Try again", Util.PROBLEM));
+
+                    System.out.print(Util.color(">>", Util.PROMPT)
+                            + " Do you want to generate a random password? [Y]es or [N]o: ");
+                    input = scan.nextLine();
+                    if (input.matches("\\b[Y|y]((es\\b)|\\b)")) {
+                        System.out.println(
+                                Util.color(">>", Util.PROMPT) + " Generating a random password");
+                        int passwordLength = 16;
+                        boolean runLengthLoop = true;
+                        while (runLengthLoop) {
+                            System.out.print(
+                                    Util.color(">>", Util.PROMPT) + " Random password length: ");
+                            if (scan.hasNextInt()) {
+                                passwordLength = scan.nextInt();
+                                scan.nextLine();
+                                if (passwordLength > 0) {
+                                    runLengthLoop = false;
+                                } else {
+                                    System.out.println(Util.color(
+                                            "Bad input, enter a length greater than zero",
+                                            Util.PROBLEM));
+                                }
+                            }
                         }
-                    } while (!passwordsMatch);
-                    Account newAccount = new Account(accountName, username, new String(accountPassword));
+                        accountPassword = Util.randomPassword(passwordLength);
+                    } else {
+                        boolean passwordsMatch = false;
+                        do {
+                            accountPassword = console.readPassword(
+                                    Util.color(">>", Util.PROMPT) + " Enter account password: ");
+                            char[] passwordCheck = console.readPassword(
+                                    Util.color(">>", Util.PROMPT) + " Re-enter account password: ");
+                            if (Arrays.equals(accountPassword, passwordCheck)) {
+                                passwordsMatch = true;
+                            } else {
+                                System.out.println(Util.color("Passwords do not match. Try again",
+                                        Util.PROBLEM));
+                            }
+                        } while (!passwordsMatch);
+                    }
+                    Account newAccount =
+                            new Account(accountName, username, new String(accountPassword));
                     try {
                         database.addAccount(newAccount);
                     } catch (InvalidDatabaseException e) {
@@ -112,7 +161,8 @@ public class App {
                     int indexToRemove = -1;
                     boolean runRemoveLoop = true;
                     while (runRemoveLoop) {
-                        System.out.print(Util.color(">>", Util.PROMPT) + " Enter index of the account to be removed: ");
+                        System.out.print(Util.color(">>", Util.PROMPT)
+                                + " Enter index of the account to be removed: ");
                         if (scan.hasNextInt()) {
                             indexToRemove = scan.nextInt();
                             scan.nextLine();
@@ -120,7 +170,9 @@ public class App {
                                     && !(indexToRemove < 1)) {
                                 runRemoveLoop = false;
                             } else {
-                                System.out.println(Util.color("Bad input, enter the integer index of the account to remove", Util.PROBLEM));
+                                System.out.println(Util.color(
+                                        "Bad input, enter the integer index of the account to remove",
+                                        Util.PROBLEM));
                             }
                         }
                     }
@@ -132,10 +184,11 @@ public class App {
                         throw new RuntimeException("Failed trying to modify database", e);
                     }
                 } else if (input.matches("\\b[F|f]((ilter\\b)|\\b)")) {
-                    System.out.print(Util.color(">>", Util.PROMPT) + " Enter filter term: ");
+                    System.out.print(Util.color(">>", Util.PROMPT) + " Enter filter term (Leave blank to clear): ");
                     filter = scan.nextLine();
                 } else if (input.matches("\\b[S|s]((ort\\b)|\\b)")) {
-                    System.out.print(Util.color(">>", Util.PROMPT) + " Sort by Creation [T]ime, [A]ccount name, or [U]sername: ");
+                    System.out.print(Util.color(">>", Util.PROMPT)
+                            + " Sort by Creation [T]ime, [A]ccount name, or [U]sername: ");
                     input = scan.nextLine();
                     Comparator chosenComparator;
                     // System.out.println(">> Ascending or descending: "); TODO A / D?
