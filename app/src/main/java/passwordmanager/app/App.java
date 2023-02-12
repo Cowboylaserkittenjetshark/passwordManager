@@ -162,11 +162,11 @@ public class App {
               indexToRemove = scan.nextInt();
               if (!(indexToRemove > filteredAccountList.size()) && !(indexToRemove < 1)) {
                 runRemoveLoop = false;
-              } else {
-                System.out.println(Util.color(
-                    "Bad input, enter the integer index of the account to remove", Util.PROBLEM));
+                continue;
               }
             }
+            System.out.println(Util.color(
+                "Bad input, enter the integer index of the account to remove", Util.PROBLEM));
             scan.nextLine();
           }
           Account accountToRemove = filteredAccountList.get(indexToRemove - 1);
@@ -185,7 +185,6 @@ public class App {
               + " Sort by Creation [T]ime, [A]ccount name, or [U]sername: ");
           input = scan.nextLine();
           Comparator chosenComparator;
-          // System.out.println(">> Ascending or descending: "); TODO A / D?
           if (input.matches("\\b[T|t]((ime\\b)|\\b)")) {
             chosenComparator = new Account.TimeComparator();
           } else if (input.matches("\\b[A|a]((ccount\\b)|\\b)")) {
